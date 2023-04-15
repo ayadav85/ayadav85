@@ -1,0 +1,164 @@
+<?php
+
+            
+
+            $connection = mysqli_connect("localhost", "root", "Aky@4939552e", "cs6400_db23_team072");
+
+            if (!$connection){
+                die("connection failed: " .mysqli_connect_error());
+            }
+
+            echo "connected <br> <br>";
+
+
+
+		
+
+		$query = "SELECT PostalCode, Radius, Latitude, Longitude, distance_in_km
+
+				FROM (
+					SELECT A.PostalCode,A.Latitude, A.Longitude, B.Radius,
+      					B.distance_unit* DEGREES(ACOS(LEAST(1.0, COS(RADIANS(latpoint))
+                 							* COS(RADIANS(Latitude))
+                 							* COS(RADIANS(longpoint) - RADIANS(longitude))
+                 							+ SIN(RADIANS(latpoint))
+                 							* SIN(RADIANS(Latitude))))) AS distance_in_km
+					FROM `postal_code` as A
+					JOIN (
+						SELECT  42.81  AS latpoint,  -70.81 AS longpoint,
+						1000.0 as Radius, 111.045 as distance_unit
+					) AS B
+   
+					where A.Latitude
+					BETWEEN B.latpoint - (B.Radius / B.distance_unit)
+        				AND B.latpoint  + (B.Radius / B.distance_unit)
+					AND A.Longitude
+					BETWEEN B.longpoint - (B.Radius / (B.distance_unit * COS(RADIANS(B.latpoint))))
+         				AND B.longpoint + (B.Radius / (B.distance_unit * COS(RADIANS(B.latpoint))))
+
+ 					) as X
+			WHERE distance_in_km <= Radius
+			ORDER BY distance_in_km
+			LIMIT 5";
+
+			
+			
+
+                $result = mysqli_query($connection, $query, MYSQLI_USE_RESULT);
+                if ($result) {
+                    while ($row = mysqli_fetch_row($result)) {
+                       
+                       echo("PostalCode: ".$row[0]."\n");
+                       echo "<br><br>";
+
+                       print("Latitude: ".$row[1]."\n");
+                       echo "<br><br>";
+
+                       print("Longitude: ".$row[2]."\n");
+                       echo "<br><br>";
+
+                       print("Radius: ".$row[3]."\n");
+                       echo "<br><br>";
+
+                    }
+                 }
+				else {
+					echo "Error in execution";
+					}
+              
+                 //Closing the connection
+                 mysqli_close($connection);
+                
+?>
+
+
+
+
+<?php
+
+            
+
+            $connection = mysqli_connect("localhost", "root", "Aky@4939552e", "cs6400_db23_team072");
+
+            if (!$connection){
+                die("connection failed: " .mysqli_connect_error());
+            }
+
+            echo "connected <br> <br>";
+
+            $query = "SELECT PostalCode
+
+				FROM (
+					SELECT A.PostalCode,A.Latitude, A.Longitude, B.Radius,
+      					B.distance_unit* DEGREES(ACOS(LEAST(1.0, COS(RADIANS(latpoint))
+                 							* COS(RADIANS(Latitude))
+                 							* COS(RADIANS(longpoint) - RADIANS(longitude))
+                 							+ SIN(RADIANS(latpoint))
+                 							* SIN(RADIANS(Latitude))))) AS distance_in_km
+					FROM `postal_code` as A
+					JOIN (
+						SELECT  42.81  AS latpoint,  -70.81 AS longpoint,
+						1000.0 as Radius, 111.045 as distance_unit
+					) AS B
+   
+					where A.Latitude
+					BETWEEN B.latpoint - (B.Radius / B.distance_unit)
+        				AND B.latpoint  + (B.Radius / B.distance_unit)
+					AND A.Longitude
+					BETWEEN B.longpoint - (B.Radius / (B.distance_unit * COS(RADIANS(B.latpoint))))
+         				AND B.longpoint + (B.Radius / (B.distance_unit * COS(RADIANS(B.latpoint))))
+
+ 					) as X
+			WHERE distance_in_km <= Radius
+			ORDER BY distance_in_km
+			LIMIT 5";
+            
+            $result = mysqli_query($connection, $query, MYSQLI_USE_RESULT);
+            
+            $postals = array();
+
+            if ($result) {
+                while ($row = mysqli_fetch_row($result)) {
+                    $postals[] = $row[0];
+                }
+            }
+            else {
+                echo "Error in execution";
+                }
+            // convert postals into list of strings
+            $postals = implode(",", $postals);
+
+            // select all the household ids that are in the postal codes
+            $query1 = "SELECT Email_Address, Household_Type, Heating, Cooling FROM `household` WHERE PostalCode IN ($postals)";
+
+            $result1 = mysqli_query($connection, $query1, MYSQLI_USE_RESULT);
+
+            if ($result1) {
+                while ($row1 = mysqli_fetch_row($result1)) {
+                    echo("Email_Address: ".$row1[0]."\n");
+                    echo "<br><br>";
+
+                    print("Household_Type: ".$row1[1]."\n");
+                    echo "<br><br>";
+
+                    print("Heating: ".$row1[2]."\n");
+                    echo "<br><br>";
+
+                    print("Cooling: ".$row1[3]."\n");
+                    echo "<br><br>";
+                }
+            }
+            else {
+                echo "Error in execution";
+                }
+            
+            mysqli_close($connection);
+            
+            
+
+
+
+?>
+
+
+
