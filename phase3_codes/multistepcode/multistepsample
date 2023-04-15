@@ -1,0 +1,485 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  
+  .modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  // get the modal
+let modal = document.querySelector("#myModal");
+
+// get the button that opens the modal
+let btn = document.querySelectorAll(".add-appliance");
+
+// get the submit button
+let submit = document.querySelector("#submit");
+
+// get the <span> element that closes the modal
+let span = document.getElementsByClassName("close")[0];
+
+for (let i = 0; i < btn.length; i++) {
+    btn[i].addEventListener("click", function () {
+      modal.style.display = "block";
+    });
+  }
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// when user clicks submit button, submit the form
+submit.onclick = function() {
+    $.post("display2.php", $("#appliance-form").serialize(), function(data) { 
+        // display the response from display.php in a new window
+        let newWindow = window.open();
+        newWindow.document.write(data);
+    });
+
+    }
+
+// When the user clicks on <span> , close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+
+
+<?php
+// Start session
+session_start();
+
+// Check if the array exists in the session
+if(isset($_SESSION['items'])) {
+  // Get the array from the session
+  $items = $_SESSION['items'];
+
+  // Display the array as a table
+  echo "<table>";
+  echo "<tr><th>Name</th><th>Description</th><th>Quantity</th></tr>";
+  foreach($items as $item) {
+    echo "<tr><td>".$item['name']."</td><td>".$item['email']."</td><td>";;
+  }
+  echo "</table>";
+} else {
+  // If the array doesn't exist in the session, display an error message
+  echo "No items found!";
+}
+?>
+
+<!-- HTML for the link to go back to the form page -->
+<a href="index.php#tab2">Add more items</a>
+
+
+
+<?php
+
+    session_start();
+    $msg = "";
+    if(isset($_SESSION['msg'])){
+        $msg = $_SESSION['msg'];
+    }
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="appliance.css">
+    <script src="script.js"></script>
+    <title>Multistep Form</title>
+</head>
+<body onload="showTab(current);hideMsg();">
+<?php
+
+    if($msg == "done"){
+    echo "<div id='msg' class='msg'>
+            <p>You have registered successfully!</p>
+          </div>";
+    }
+
+?>
+    <div id="container" class="container">
+        
+        <form id="regForm" method="post" action="process.php">
+            <ul id="progressbar">
+                <li class="active" id="account">Household Info</li>
+                <li id="address">Appliances</li>
+                <li id="personal">Power Generation</li>
+                <li id="contact">Done</li>
+            </ul>
+            <div class="tab">
+                <label>Email</label>
+                <input type="text" name="email" placeholder="Enter Email" oninput="this.className=''">
+            </div>    
+            
+
+            <div class="tab">
+                
+                <label>HomeType</label>
+                <select name="hometype" id="hometype" placeholder="Select HomeType" oninput="this.className=''">
+                    <option value="">--- Choose HomeType ---</option>
+                    <option value="house">House</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="flat">Flat</option>
+                </select> 
+
+                <level>Select PublicUtilities</level>
+                <input type="checkbox" name='lang[]' value="electric"> 
+                <label for="utilities-electricity">Electricity</label>
+                <input type="checkbox" name='lang[]' value="gas">
+                <label for="utilities-gas">Gas</label>
+                <input type="checkbox" name='lang[]' value="fuel"> 
+                <label for="utilities-gas">Fuel</label>
+                <input type="checkbox" name='lang[]' value="steam"> 
+                <label for="utilities-gas">Steam</label>
+
+                
+                <label>Heating:</label>
+                <input type="checkbox" id="checkbox" name="checkbox" value="1">
+                <input type="number" id="number" name="number" min="0" max="100" value="0">
+                <label>Cooling:</label>
+                <input type="checkbox" id="checkbox" name="checkbox" value="1">
+                <input type="number" id="number" name="number" min="0" max="100" value="0">
+            </div>
+            
+
+            <div class="tab">
+                <label>Email</label>
+                <input type="text" name="email" placeholder="Enter Email" oninput="this.className=''">
+                
+            </div>
+
+            <div class="tab">
+
+                <?php
+                // Start session
+                session_start();
+
+                // Check if the form has been submitted
+                if($_SERVER['REQUEST_METHOD'] == 'POST') {
+                // Get form data and add it to the array
+                $item = array(
+                    'name' => $_POST['name'],
+                    'email' => $_POST['email'],
+                );
+                $_SESSION['items'][] = $item;
+                
+                // Redirect to the display page
+                
+                exit;
+                }
+                ?>
+
+                <!__Modal Page__>
+                <div class="container">
+                <button class="add-appliance">Add Appliance</button>
+                </div>
+
+                <!__The Modal __>
+                <div id="myModal" class="modal">
+                <!__ Modal content __>
+                <div class="modal-content">
+       
+                <span class="close">&times;</span>
+                <h2>Appliance Name</h2>
+                    <form method="POST" onSubmit="nextPrev(1)">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    <label for="name">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <button  type="submit" value="submit">Add</button>
+                    </form>
+                </div>
+                </div> 
+                <!__ End of Modal __>
+                <script  src="appliance.js"></script>    
+            </div>
+
+            <div class="tab">
+            
+                
+            </div>
+            
+                <div style="overflow: hidden;">
+                    <div style="float: right;">
+                        <button onclick="nextPrev(-1);" type="button" id="prev">Previous</button>
+                        <button onclick="nextPrev(1);" type="button" id="next">Next</button>
+                    </div>
+                </div>
+                </form>
+                
+            
+            </div>
+</body>
+</html>
+
+var current = 0;
+
+function idName(id){
+    return document.getElementById(id);
+}
+
+function tagName(tg){
+    return document.getElementsByTagName(tg);
+}
+
+function hideMsg(){
+    window.setTimeout(function(){
+        idName("msg").style.display = "none";
+
+    }, 3000);
+}
+
+function showTab(n){
+    var tab = idName("container").getElementsByTagName("div");
+    tab[n].style.display = "block";
+    if(n == 0){
+        idName("prev").style.display = "none";
+    }
+    else{
+        idName("prev").style.display = "inline";
+    }
+    if(n == 3){
+        idName("next").innerHTML = "Submit";
+    }
+    else{
+        idName("next").innerHTML = "Next";
+    }
+    changeProgress(current);
+}
+
+function nextPrev(n){
+    var tab = idName("container").getElementsByTagName("div");
+
+    tab[current].style.display = "none";
+    current = current + n;
+    if(current == 4){
+        idName("regForm").submit();
+    }
+    var pro = tagName("li");
+    for(var i = 0; i < 4; i++){
+        pro[i].style.fontWeight = "100";
+    }
+    pro[current].style.fontWeight = "900";
+    showTab(current);
+}
+
+/*function validateForm(){
+    var tab, inp, i, valid = true;
+    tab = idName("container").getElementsByTagName("div");
+    inp = tab[current].getElementsByTagName("input");
+    if(current == 0){
+        if(inp[1].value != inp[2].value){
+            inp[1].className += " invalid";
+            inp[2].className += " invalid";
+            valid = false;
+        }
+    }
+    for(i = 0; i < 3; i++){
+        if(inp[i].value == ""){
+            inp[i].className += " invalid";
+            valid = false;
+        }
+    }
+    return valid;
+}*/
+
+function changeProgress(n){
+    var pro = tagName("li");
+    pro[n].className += " active";
+}
+
+
+
+
+
+*,html{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    margin: auto;
+    padding: 0;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+.msg{
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 50%;
+    height: auto;
+    background: #25D366;
+    color: #FFF;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.msg p{
+    text-align: center;
+    font-size: 15px;
+}
+
+#progressbar {
+    width: 100%;
+    margin-bottom: 30px;
+    overflow: hidden;
+    color: gray;
+    margin-left: 65px;
+}
+
+#progressbar .active {
+    color: blue;
+    font-weight: 900;
+}
+
+#progressbar li {
+    list-style-type: none;
+    font-size: 15px;
+    width: 25%;
+    float: left;
+    position: relative;
+    font-weight: 400
+}
+
+#progressbar #account:before {
+    content: "1"
+}
+
+#progressbar #personal:before {
+    content: "2"
+}
+
+#progressbar #contact:before {
+    content: "3"
+}
+
+#progressbar li:before {
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    display: block;
+    font-size: 20px;
+    color: blue;
+    background: gray;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    padding: 2px;
+    text-align: center;
+}
+
+#progressbar li:after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background: grey;
+    position: absolute;
+    left: -50%;
+    top: 15px;
+    z-index: -1
+}
+
+#progressbar li:first-child:after {
+	content: none; 
+}
+
+#progressbar li.active:before,
+#progressbar li.active:after {
+    background: blue;
+    font-weight: 900;
+}
+
+.tab{
+    display: none;
+}
+
+label, input[type="text"], input[type="email"], select, input[type="number"] {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  input[type="checkbox"] {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  
+input.invalid {
+   background: #ffdddd;
+}
+
+button {
+    background:blue;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 17px;
+    cursor: pointer;
+  }
+  
+
+
+
+
+
+
+
+  
+  
