@@ -1,0 +1,150 @@
+<?php
+
+            echo 'Name'.' '. 'Email'.' '.'Number'.' '.'Gender'.'<br>';
+
+            $connection = mysqli_connect("localhost", "root", "", "sample");
+
+            if (!$connection){
+                die("connection failed: " .mysqli_connect_error());
+            }
+
+            echo "connected <br> <br>";
+            
+           
+            $query = "SELECT * FROM `sampleinfo`";
+
+                $result = mysqli_query($connection, "SELECT * FROM sampleinfo", MYSQLI_USE_RESULT);
+                if ($result) {
+                    while ($row = mysqli_fetch_row($result)) {
+                       
+                       echo("Email: ".$row[0]."\n");
+                       echo "<br><br>";
+
+                       print("Postal: ".$row[1]."\n");
+                       echo "<br><br>";
+
+                       print("HomeType: ".$row[2]."\n");
+                       echo "<br><br>";
+
+                       print("Footage: ".$row[3]."\n");
+                       echo "<br><br>";
+
+                       print("Utilities: ".unserialize($row[4])."\n");
+                       echo "<br><br>";
+
+                       print("Gender: ".$row[5]."\n");
+                       echo "<br><br>";
+
+                    }
+                 }
+              
+                 //Closing the connection
+                 mysqli_close($connection);
+                
+?>
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <body>
+
+                <?php
+
+          $email = $postal = $hometype = $squarefootage = $publicutilities = $gender = " " ;
+
+            if ($_SERVER["REQUEST_METHOD"]=="POST") {
+                
+                $email = $_POST["email"];
+                $postal = $_POST["postal"];
+                $hometype = $_POST["hometype"];
+                $squarefootage = $_POST["footage"];
+                $publicutilities = serialize($_POST["lang"]);
+                $gender = $_POST["gender"];
+
+                
+            }
+
+            function test_input($data) {
+                $data = trim($data);
+                $data = stripcslashes($data);
+                $data = htmlspecialchars($data);
+                return $data;
+            }
+    
+
+            ?>
+            <!--- for self page action php echo htmlspecialchars($_SERVER["PHP_SELF"]); --->
+            <h2>Household Info Page</h2>
+            <form method="post" action="<?php echo($_SERVER['PHP_SELF']) ?>">
+        
+            Email: <input type="text" name="email">
+            <br> <br>
+            PostalCode: <input type="number" name="postal">
+            <br> <br>
+            HomeType: 
+            <select name="hometype" id="hometype">
+            <option value="">--- Choose HomeType ---</option>
+            <option value="house">House</option>
+            <option value="apartment">Apartment</option>
+            <option value="flat">Flat</option>
+            </select>
+            <br> <br>
+            SquareFootage:
+            <input type="number" name="footage">
+            <br> <br>
+            PublicUtilities:
+            <span>Select PublicUtilities</span><br/>
+            <input type="checkbox" name='lang[]' value="electric"> Electric <br/>
+            <input type="checkbox" name='lang[]' value="gas"> Gas <br/>
+            <input type="checkbox" name='lang[]' value="fuel"> Fuel Oil <br/>
+            <input type="checkbox" name='lang[]' value="steam"> Steam <br/>
+            Gender:
+            <input type="radio" name="gender" value="female">Female
+            <input type="radio" name="gender" value="male">Male
+            <br> <br>
+            <input type="submit" name="click" value="click">
+
+
+            <?php
+            $connection = mysqli_connect("localhost", "root", "", "sample");
+            if (!$connection){
+                die("connection failed: " .mysqli_connect_error());
+            }
+
+            echo "connected";
+            
+           
+                $query = "INSERT INTO sampleinfo(Email, Postal,HomeType, Footage, Utilities, Gender  ) values ('$email', '$postal', '$hometype' ,'$squarefootage','$publicutilities', '$gender')";
+                if(mysqli_query($connection, $query)){
+                    echo "record inserted";
+                }
+                
+                else {
+                    echo "<p>Insertion Failed <br/> Some Fields are Blank....!!</p>" .mysqli_error($connection); 
+                }
+
+            
+            $close = mysqli_close($connection);
+
+            if ($close){
+                echo "connection closed";
+            }
+            else{
+                echo "error " .mysqli_error($connection);
+            }
+            ?>
+            </form>
+
+            
+
+           
+        </body>
+</html>
+
+
+
+
