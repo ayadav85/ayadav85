@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<?php
+// Start session
+session_start();
+
+// Check if the form has been submitted
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // Get form data and add it to the array
+  $item = array(
+    'name' => $_POST['name'],
+    'email' => $_POST['email'],
+  );
+  $_SESSION['items'][] = $item;
+  
+  // Redirect to the display page
+  header("Location: display2.php");
+  exit;
+}
+?>
+
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Appliance</title>
+    <link rel="stylesheet" href="appliance.css">
+  </head>
+<body>
+
+  
+
+<div class="container">
+<button class="add-appliance">Add Appliance</button>
+</div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Appliance Name</h2>
+    <form method="POST">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+      <label for="name">Email:</label>
+      <input type="email" id="email" name="email" required>
+      <button type="submit" value="submit">Send</button>
+    </form>
+  </div>
+</div> <!-- End of Modal -->
+<script src="appliance.js"></script>
+
+
+</body>
+</html>
+
+
+
+<?php
+// Start session
+session_start();
+
+// Check if the array exists in the session
+if(isset($_SESSION['items'])) {
+  // Get the array from the session
+  $items = $_SESSION['items'];
+
+  // Display the array as a table
+  echo "<table>";
+  echo "<tr><th>Name</th><th>Description</th><th>Quantity</th></tr>";
+  foreach($items as $item) {
+    echo "<tr><td>".$item['name']."</td><td>".$item['email']."</td><td>";;
+  }
+  echo "</table>";
+} else {
+  // If the array doesn't exist in the session, display an error message
+  echo "No items found!";
+}
+?>
+
+<!-- HTML for the link to go back to the form page -->
+<a href="appliance1.php">Add more items</a>
+
+
+IFSC Code: UBIN0816311
+
+account no : 163110100036941
+
+dhiraj kumar singh
+
+
+
+
+
+
